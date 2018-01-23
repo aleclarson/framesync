@@ -118,6 +118,8 @@ raf(function tick(time) {
     lastFrameTime = time
     queues.forEach(flush)
     stepIdx = -1
+  } else {
+    lastFrameTime = time
   }
   raf(tick)
 })
