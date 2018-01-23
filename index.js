@@ -42,7 +42,7 @@ frame.once = function(step, fn, asap) {
     // This ensures the soonest possible execution.
     if (i == stepIdx) {
       queues[i].now.push(fn)
-      return
+      return fn
     }
   }
   // When our step is after the active step, the `next` queue will
@@ -51,16 +51,17 @@ frame.once = function(step, fn, asap) {
   else if (~stepIdx && i > stepIdx) {
     queues[i].now.push(fn)
     willFlush = true
-    return
+    return fn
   }
   // Here, the `next` queue is definitely what it says it is,
   // the function queue that is processed in the next frame.
   queues[i].next.push(fn)
   willFlush = true
+  return fn
 }
 
 frame.on = function(step, fn) {
-  frame.once(step, function eachFrame() {
+  return frame.once(step, function eachFrame() {
     if (fn() !== false) frame.once(step, eachFrame)
   })
 }
