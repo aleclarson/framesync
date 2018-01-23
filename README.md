@@ -29,7 +29,7 @@ frame.now()
 // The current render step (equals null if no step is active)
 frame.step
 
-// Time since the previous frame
+// Time since the previous frame. Only correct when `frame.step` is not null.
 frame.elapsed
 
 frame.once('start', () => {
