@@ -62,4 +62,8 @@ frame.promise(true)
 
 // You can also specify which step to resolve the promise.
 frame.promise('render', true)
+
+// Distort the time of each frame.
+// For example, passing 0.5 will halve the speed of any animations.
+frame.dilate(0.5)
 ```

@@ -18,6 +18,8 @@ Object.defineProperty(frame, 'elapsed', {
 
 frame.now = () => performance.now()
 
+frame.dilate = (value) => {dilation = value}
+
 frame.promise = (step, asap) => {
   if (typeof step == 'boolean') {
     asap = step; step = null
