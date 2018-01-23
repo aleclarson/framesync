@@ -85,7 +85,7 @@ frame.off = function(step, fn) {
 const raf = window.requestAnimationFrame
 
 // Tolerance of delay between frames (to prevent visual jumps).
-const MAX_ELAPSED = 20
+const MAX_ELAPSED = 40
 
 // The render steps in order.
 const steps = ['start', 'update', 'render', 'end']
