@@ -81,3 +81,28 @@ tp.test('asap function when a later step is active', (t) => {
   return frame.promise('end')
     .then(() => t.eq(calls, 1))
 })
+
+tp.test('return false in on() function to stop listening', (t) => {
+  t.eq(frame.step, null)
+  const order = []
+  frame.on('start', () => {
+    order.push(frame.step)
+    return false
+  })
+  frame.on('update', () => {
+    order.push(frame.step)
+  })
+  return frame.promise('end')
+    .then(() => frame.promise('end'))
+    .then(() => t.eq(order, ['start', 'update', 'update']))
+})
+
+tp.test('off() does not work with on() functions', (t) => {
+  t.eq(frame.step, null)
+  let fired = false
+  const fire = () => {fired = true}
+  frame.on('start', fire)
+  frame.off('start', fire)
+  return frame.promise('end')
+    .then(() => t.eq(fired, true))
+})
