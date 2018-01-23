@@ -46,7 +46,8 @@ frame.once('render', () => {
 
 frame.on('update', () => {
   // Use the `on` method to continually call a function on every frame.
-  // You can return false to stop the loop, or use the `off` method.
+  // You can return false to stop the loop, or pass the returned function
+  // to the `off` method.
 })
 
 // The `off` method removes a queued function before it can be called.
