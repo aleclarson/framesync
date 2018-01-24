@@ -106,3 +106,25 @@ tp.test('off() does not work with on() functions', (t) => {
   return frame.promise('end')
     .then(() => t.eq(fired, true))
 })
+
+tp.test('promises are not supported within render steps', (t) => {
+  t.eq(frame.step, null)
+  let fired = false
+  frame.promise('start').then(() => {fired = true})
+  frame.once('end', () => t.eq(fired, false))
+  return frame.promise('end')
+})
+
+tp.test('promise() steps are predictably ordered', (t) => {
+  t.eq(frame.step, null)
+  const order = []
+  const onStep = (step) =>
+    frame.promise(step).then(() => order.push(step))
+
+  onStep('update')
+  onStep('render')
+  onStep('start')
+
+  return frame.promise('end')
+    .then(() => t.eq(order, ['start', 'update', 'render']))
+})
