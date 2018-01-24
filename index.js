@@ -1,17 +1,20 @@
 
-const frame = exports
+const define = Object.defineProperty
 
-Object.defineProperty(frame, 'step', {
+// Support both `import` and `require`
+const frame = define(exports, 'default', {value: exports})
+
+define(frame, 'step', {
   get: () => ~stepIdx ? steps[stepIdx] : null,
   enumerable: true,
 })
 
-Object.defineProperty(frame, 'time', {
+define(frame, 'time', {
   get: () => lastFrameTime,
   enumerable: true,
 })
 
-Object.defineProperty(frame, 'elapsed', {
+define(frame, 'elapsed', {
   get: () => elapsed,
   enumerable: true,
 })
