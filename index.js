@@ -15,7 +15,7 @@ define(frame, 'time', {
 })
 
 define(frame, 'elapsed', {
-  get: () => elapsed,
+  get: () => elapsedTime,
   enumerable: true,
 })
 
