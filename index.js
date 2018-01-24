@@ -56,8 +56,9 @@ frame.once = function(step, fn, asap) {
     willFlush = true
     return fn
   }
-  // Here, the `next` queue is definitely what it says it is,
-  // the function queue that is processed in the next frame.
+  // At this point, the `next` queue will be processed in the
+  // current frame if `asap` is truthy and the active step is *before*
+  // our step. Otherwise, our function must be called in the next frame.
   queues[i].next.push(fn)
   willFlush = true
   return fn
