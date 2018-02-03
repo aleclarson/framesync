@@ -118,7 +118,8 @@ let willFlush = false
 raf(function tick(time) {
   raf(tick)
 
-  if (willFlush) {
+  const start = frame.now() - time
+  if (willFlush && start < 16.5) {
     willFlush = false
     elapsedTime = dilation *
       Math.max(1, Math.min(MAX_ELAPSED, time - lastFrameTime))
