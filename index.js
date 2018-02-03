@@ -116,6 +116,8 @@ let dilation = 1
 // Continually flush the listener queue.
 let willFlush = false
 raf(function tick(time) {
+  raf(tick)
+
   if (willFlush) {
     willFlush = false
     elapsedTime = dilation *
@@ -126,7 +128,6 @@ raf(function tick(time) {
   } else {
     lastFrameTime = time
   }
-  raf(tick)
 })
 
 function flush(queue, idx) {
