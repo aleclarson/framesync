@@ -1,5 +1,5 @@
 
-# framesync v1.1.2
+# framesync v1.1.3
 
 Tiny scheduler that splits each frame into 4 distinct "render steps".
 
