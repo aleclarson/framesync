@@ -132,12 +132,12 @@ raf(function tick(time) {
 })
 
 function flush(queue, idx) {
-  const {next} = queue
+  const {next, now} = queue
   if (next.length) {
     stepIdx = idx
 
     // Reuse the queues to avoid garbage collection.
-    queue.next = queue.now
+    queue.next = now
     queue.now = next
 
     let i = -1, fn
@@ -145,5 +145,10 @@ function flush(queue, idx) {
       fn = next[i]; fn && fn()
     }
     next.length = 0
+  }
+  // Ensure the queues are swapped.
+  else if (now.length) {
+    queue.next = now
+    queue.now = next
   }
 }
