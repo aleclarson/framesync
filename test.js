@@ -2,6 +2,7 @@
 // Polyfill the browser-specific functions
 require('./polyfill')
 
+const noop = require('noop')
 const tp = require('testpass')
 
 const frame = require('.')
@@ -29,57 +30,81 @@ tp.test('queued functions can be removed', (t) => {
     .then(() => t.eq(fired, false))
 })
 
-tp.test('asap function when no step is active', (t) => {
-  t.eq(frame.step, null)
-  let time
-  frame.once('update', () => {
-    time = frame.time
-  }, true)
-  return frame.promise('end')
-    .then(() => t.eq(time, frame.time))
+tp.group('no active step:', () => {
+  tp.test('run asap', (t) => {
+    t.eq(frame.step, null)
+    let time
+    frame.once('update', () => {
+      time = frame.time
+    }, true)
+    return frame.promise('end')
+      .then(() => t.eq(time, frame.time))
+  })
 })
 
-tp.test('asap function when an earlier step is active', (t) => {
-  t.eq(frame.step, null)
-  let calls = 0
-  frame.once('start', () => {
-    const {time} = frame
-    calls += 1
+tp.group('active step is ours:', () => {
+  tp.test('run asap', (t) => {
+    t.eq(frame.step, null)
+    let calls = 0
     frame.once('update', () => {
+      const {time} = frame
       calls += 1
-      t.eq(time, frame.time)
-    }, true)
+      frame.once('update', () => {
+        calls += 1
+        t.eq(time, frame.time)
+      }, true)
+    })
+    return frame.promise('end')
+      .then(() => t.eq(calls, 2))
   })
-  return frame.promise('end')
-    .then(() => t.eq(calls, 2))
 })
 
-tp.test('asap function when its step is active', (t) => {
-  t.eq(frame.step, null)
-  let calls = 0
-  frame.once('update', () => {
-    const {time} = frame
-    calls += 1
-    frame.once('update', () => {
-      calls += 1
-      t.eq(time, frame.time)
-    }, true)
+tp.group('active step is earlier:', () => {
+  tp.test('run next frame, where previous queue is empty', (t) => {
+    let calls = 0
+    frame.once('start', () =>
+      frame.once('update', () => calls++))
+    return frame.promise('end')
+      .then(() => frame.promise('end'))
+      .then(() => t.eq(calls, 1))
   })
-  return frame.promise('end')
-    .then(() => t.eq(calls, 2))
+  tp.test('run next frame, where previous queue is not empty', (t) => {
+    let calls = 0
+    frame.once('start', () =>
+      frame.once('update', () => calls++))
+    frame.once('update', noop)
+    return frame.promise('end')
+      .then(() => frame.promise('end'))
+      .then(() => t.eq(calls, 1))
+  })
+  tp.test('run asap', (t) => {
+    let calls = 0
+    frame.once('start', () => {
+      const {time} = frame
+      calls += 1
+      frame.once('update', () => {
+        calls += 1
+        t.eq(time, frame.time)
+      }, true)
+    })
+    return frame.promise('end')
+      .then(() => t.eq(calls, 2))
+  })
 })
 
-tp.test('asap function when a later step is active', (t) => {
-  t.eq(frame.step, null)
-  let calls = 0
-  frame.once('render', () => {
-    calls += 1
-    frame.once('update', () => {
+tp.group('active step is later:', () => {
+  tp.test('run asap', (t) => {
+    t.eq(frame.step, null)
+    let calls = 0
+    frame.once('render', () => {
       calls += 1
-    }, true)
+      frame.once('update', () => {
+        calls += 1
+      }, true)
+    })
+    return frame.promise('end')
+      .then(() => t.eq(calls, 1))
   })
-  return frame.promise('end')
-    .then(() => t.eq(calls, 1))
 })
 
 tp.test('return false in on() function to stop listening', (t) => {
